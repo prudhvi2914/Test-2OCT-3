@@ -51,15 +51,16 @@ public class GameEngine extends SurfaceView implements Runnable {
     Player player;
    Item enemy1;
     Item enemy2;
+    Item like1;
+    Item like2;
 
-    Bitmap background;
-    int bgXPosition = 0;
-    int backgroundRightSide = 0;
+
     // ----------------------------
     // ## GAME STATS
     // ----------------------------
 
-    int lives = 10;
+    int lives = 3;
+    int score= 0;
 
 
     public GameEngine(Context context, int w, int h) {
@@ -79,10 +80,11 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
         // put the initial starting position of your player and enemies
-        this.player = new Player(getContext(), 2000, 80);
+        this.player = new Player(getContext(), 2000, 300);
         this.enemy1 = new Item(getContext(), 80, 80);
         this.enemy2 = new Item(getContext(), 80, 300);
-
+        this.like1 = new Item(getContext(), 80, 600);
+        this.like2 = new Item(getContext(), 80, 900);
 
 
 
@@ -156,12 +158,12 @@ public class GameEngine extends SurfaceView implements Runnable {
             // if mousedown, then move player up
             // Make the UP movement > than down movement - this will
             // make it look like the player is moving up alot
-            player.setyPosition(player.getyPosition() - 100);
+            this.player.setyPosition(-100);
             player.updateHitbox();
         }
         else if (this.fingerAction == "mouseup") {
             // if mouseup, then move player down
-            player.setyPosition(player.getyPosition() + 10);
+            this.player.setyPosition(+100);
             player.updateHitbox();
         }
 
@@ -187,18 +189,43 @@ public class GameEngine extends SurfaceView implements Runnable {
         // MAKE ENEMY MOVE
         // - enemy moves left forever
         // - when enemy touches LEFT wall, respawn on RIGHT SIDE
-        this.enemy2.setxPosition(this.enemy2.getxPosition()+25);
+        this.enemy2.setxPosition(this.enemy2.getxPosition()+10);
 
         // MOVE THE HITBOX (recalcluate the position of the hitbox)
         this.enemy2.updateHitbox();
 
         if (this.enemy2.getxPosition() <= 0) {
             // restart the enemy in the starting position
-//            this.enemy2.setxPosition(1500);
-//            this.enemy2.setyPosition(500);
+            this.enemy2.setxPosition(1500);
+            this.enemy2.setyPosition(500);
 
             this.enemy2.updateHitbox();
         }
+
+        this.like1.setxPosition(this.like1.getxPosition()+25);
+
+        // MOVE THE HITBOX (recalcluate the position of the hitbox)
+        this.like1.updateHitbox();
+
+        if (this.like1.getxPosition() <= 0) {
+            // restart the enemy in the starting position
+            this.like1.setxPosition(1300);
+            this.like1.setyPosition(700);
+            this.like1.updateHitbox();
+        }
+
+        this.like2.setxPosition(this.like2.getxPosition()+25);
+
+        // MOVE THE HITBOX (recalcluate the position of the hitbox)
+        this.like2.updateHitbox();
+
+        if (this.like2.getxPosition() <= 0) {
+            // restart the enemy in the starting position
+            this.like2.setxPosition(1300);
+            this.like2.setyPosition(120);
+            this.like2.updateHitbox();
+        }
+
 
 
         // @TODO:  Check collisions between enemy and player
@@ -233,12 +260,45 @@ public class GameEngine extends SurfaceView implements Runnable {
             // -------
             // 1. Restart the player
             // 2. Restart the player's hitbox
-            this.player.setxPosition(100);
-            this.player.setyPosition(600);
+            this.player.setxPosition(2000);
+            this.player.setyPosition(900);
             this.player.updateHitbox();
 
             // decrease the lives
             lives = lives - 1;
+
+        }
+
+        if (this.player.getHitbox().intersect(this.like1.getHitbox()) == true) {
+            // the enemy and player are colliding
+            Log.d(TAG, "++++++ENEMY AND PLAYER COLLIDING!");
+
+            // @TODO: What do you want to do next?
+
+            // RESTART THE PLAYER IN ORIGINAL POSITION
+            // -------
+            // 1. Restart the player
+            // 2. Restart the player's hitbox
+
+
+            // decrease the lives
+            score = score + 1;
+
+        }
+        if (this.player.getHitbox().intersect(this.like2.getHitbox()) == true) {
+            // the enemy and player are colliding
+            Log.d(TAG, "++++++ENEMY AND PLAYER COLLIDING!");
+
+            // @TODO: What do you want to do next?
+
+            // RESTART THE PLAYER IN ORIGINAL POSITION
+            // -------
+            // 1. Restart the player
+            // 2. Restart the player's hitbox
+
+
+            // decrease the lives
+            score = score + 1;
 
         }
 
@@ -271,7 +331,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
 //drawing a line
-canvas.drawLine(10,300,3000,300,paintbrush);
+            canvas.drawLine(10,300,3000,300,paintbrush);
             canvas.drawLine(10,600,3000,600,paintbrush);
             canvas.drawLine(10,900,3000,900,paintbrush);
             canvas.drawLine(10,1200,3000,1200,paintbrush);
@@ -293,16 +353,26 @@ canvas.drawLine(10,300,3000,300,paintbrush);
             // 2. draw the enemy's hitbox
             canvas.drawRect(enemy2.getHitbox(), paintbrush);
 
+            canvas.drawBitmap(like1.getImage(), like1.getxPosition(), like1.getyPosition(), paintbrush);
+            // 2. draw the enemy's hitbox
+            canvas.drawRect(like1.getHitbox(), paintbrush);
 
             // -----------------------------
-            paintbrush.setColor(Color.YELLOW);
+            paintbrush.setColor(Color.BLACK);
             paintbrush.setTextSize(60);
             canvas.drawText("Lives remaining: " + lives,
-                    1100,
-                    800,
+                    100,
+                    100,
                     paintbrush
             );
 
+            paintbrush.setColor(Color.GREEN);
+            paintbrush.setTextSize(80);
+            canvas.drawText("SCORE : " + score,
+                    100,
+                    300,
+                    paintbrush
+            );
 
 
 
@@ -333,12 +403,16 @@ canvas.drawLine(10,300,3000,300,paintbrush);
         //@TODO: What should happen when person touches the screen?
         // Answer - PRESS DOWN ON SCREEN --> PLAYER MOVES UP
         // RELEASE FINGER --> PLAYER MOVES DOWN
-        if (userAction == MotionEvent.ACTION_DOWN) {
-            //Log.d(TAG, "Person tapped the screen");
-            // User is pressing down, so move player up
+
+        float fingerXPosition = event.getX();
+        float fingerYPosition = event.getY();
+
+        int middleOfScreen = this.screenHeight / 2;
+        if (fingerYPosition <= middleOfScreen) {
+
             fingerAction = "mousedown";
         }
-        else if (userAction == MotionEvent.ACTION_UP) {
+        else if (fingerYPosition >= middleOfScreen) {
             //Log.d(TAG, "Person lifted finger");
             // User has released finger, so move player down
             fingerAction = "mouseup";
