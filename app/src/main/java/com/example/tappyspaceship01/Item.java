@@ -5,6 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Item {
 
     // PROPERTIES:
@@ -18,6 +22,9 @@ public class Item {
     private int xPosition;
     private int yPosition;
 
+    //Implemnet randomly appereing items
+    List<Item> images = new ArrayList<>();
+
     public Item(Context context, int x, int y) {
         // 1. set up the initial position of the Enemy
         this.xPosition = x;
@@ -27,6 +34,9 @@ public class Item {
         this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.poop64);
         this.image2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.rainbow64);
         this.image3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.candy32);
+//
+//images.add(R.drawable.poop64);
+//int images[]={(image,image2,image3)};
 
         // 3. Set the default hitbox - all enemies have same hitbox
         this.hitbox = new Rect(

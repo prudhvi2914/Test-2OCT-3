@@ -13,6 +13,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class GameEngine extends SurfaceView implements Runnable {
@@ -35,6 +37,12 @@ public class GameEngine extends SurfaceView implements Runnable {
     SurfaceHolder holder;
     Canvas canvas;
     Paint paintbrush;
+//
+int playerXPosition;
+    int playerYPosition;
+
+//Implemnet randomly appereing items
+List<Item> items = new ArrayList<>();
 
 
 
@@ -65,7 +73,8 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     public GameEngine(Context context, int w, int h) {
         super(context);
-
+//Implemnet randomly appereing items
+        List<Item> items = new ArrayList<>();
 
         this.holder = this.getHolder();
         this.paintbrush = new Paint();
@@ -86,6 +95,11 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.like1 = new Item(getContext(), 80, 600);
         this.like2 = new Item(getContext(), 80, 900);
 
+        items.add(enemy1);
+        items.add(enemy2);
+        items.add(like1);
+        items.add(like2);
+        Collections.shuffle(items);
 
 
     }
@@ -356,6 +370,9 @@ public class GameEngine extends SurfaceView implements Runnable {
             canvas.drawBitmap(like1.getImage(), like1.getxPosition(), like1.getyPosition(), paintbrush);
             // 2. draw the enemy's hitbox
             canvas.drawRect(like1.getHitbox(), paintbrush);
+            canvas.drawBitmap(like2.getImage(), like2.getxPosition(), like2.getyPosition(), paintbrush);
+            // 2. draw the enemy's hitbox
+            canvas.drawRect(like2.getHitbox(), paintbrush);
 
             // -----------------------------
             paintbrush.setColor(Color.BLACK);
