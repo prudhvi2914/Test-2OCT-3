@@ -315,6 +315,12 @@ List<Item> items = new ArrayList<>();
             score = score + 1;
 
         }
+        if (lives = 0){
+            //make the game stop/pause
+            pauseGame();
+
+
+        }
 
 
 
