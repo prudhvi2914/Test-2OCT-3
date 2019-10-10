@@ -14,13 +14,13 @@ public class Player {
     private int xPosition;
     private int yPosition;
 
-    public Player(Context context, int x, int y) {
+    public Player(Context context, int x, int y,Bitmap image,Rect hitbox) {
         // 1. set up the initial position of the Enemy
         this.xPosition = x;
         this.yPosition = y;
+        this.image = image;
 
         // 2. Set the default image - all enemies have same image
-        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dino64);
 
         // 3. Set the default hitbox - all enemies have same hitbox
         this.hitbox = new Rect(

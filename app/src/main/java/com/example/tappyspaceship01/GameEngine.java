@@ -13,7 +13,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -41,8 +40,15 @@ public class GameEngine extends SurfaceView implements Runnable {
 int playerXPosition;
     int playerYPosition;
 
+   Bitmap image;
+
+
+
 //Implemnet randomly appereing items
-List<Item> items = new ArrayList<>();
+
+
+    public static Random random = new Random();
+
 
 
 
@@ -71,10 +77,12 @@ List<Item> items = new ArrayList<>();
     int score= 0;
 
 
+    //Implemnet randomly appereing items
+    List<Item> items = new ArrayList<>();
+
     public GameEngine(Context context, int w, int h) {
         super(context);
-//Implemnet randomly appereing items
-        List<Item> items = new ArrayList<>();
+
 
         this.holder = this.getHolder();
         this.paintbrush = new Paint();
@@ -86,23 +94,50 @@ List<Item> items = new ArrayList<>();
         this.printScreenInfo();
 
         // @TODO: Add your sprites
-
-
+//
+//        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.poop64);
+//        this.image2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.rainbow64);
+//        this.image3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.candy32);
         // put the initial starting position of your player and enemies
-        this.player = new Player(getContext(), 2000, 300);
-        this.enemy1 = new Item(getContext(), 80, 80);
-        this.enemy2 = new Item(getContext(), 80, 300);
-        this.like1 = new Item(getContext(), 80, 600);
-        this.like2 = new Item(getContext(), 80, 900);
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dino64);
+        this.player = new Player(getContext(), 2000, 300,image, new Rect(2000,300,2060,360));
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.poop64);
+        this.enemy1 = new Item(getContext(), 80, 80,image, new Rect(80,80,140,140));
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.poop64);
+        this.enemy2= new Item(getContext(), 80, 300,image, new Rect(80,80,140,360));
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.candy64);
+        this.like1 = new Item(getContext(), 80, 600,image,new Rect(80,600,140,664));
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.rainbow64);
+        this.like2 = new Item(getContext(), 80, 900,image,new Rect(80,900,140,960));
+
 
         items.add(enemy1);
         items.add(enemy2);
         items.add(like1);
         items.add(like2);
-        Collections.shuffle(items);
+
+        Item item = items.get(new Random().nextInt(items.size()));
+
+
 
 
     }
+
+//    public Item getRandomItem(List<Item> items) {
+//
+//
+//        items.add(enemy1);
+//        items.add(enemy2);
+//        items.add(like1);
+//        items.add(like2);
+//
+//        Item item = items.get(new Random().nextInt(items.size()));
+//
+//
+//
+//        return item;
+//
+//    }
 
 
     private void printScreenInfo() {
@@ -117,8 +152,14 @@ List<Item> items = new ArrayList<>();
         Random random = new Random();
 
         //@TODO: Place the enemies in a random location
-
     }
+
+
+
+
+
+
+
 
     // ------------------------------
     // GAME STATE FUNCTIONS (run, stop, start)
@@ -159,8 +200,6 @@ List<Item> items = new ArrayList<>();
 
     public void updatePositions() {
 
-        // UPDATE BACKGROUND POSITION
-        // 1. Move the background
 
 
 
@@ -172,14 +211,17 @@ List<Item> items = new ArrayList<>();
             // if mousedown, then move player up
             // Make the UP movement > than down movement - this will
             // make it look like the player is moving up alot
-            this.player.setyPosition(-100);
+            this.player.setyPosition(player.getyPosition() -10 );
             player.updateHitbox();
         }
         else if (this.fingerAction == "mouseup") {
             // if mouseup, then move player down
-            this.player.setyPosition(+100);
+            this.player.setyPosition(player.getyPosition() +10 );
             player.updateHitbox();
         }
+
+
+
 
         // MAKE ENEMY MOVE
         // - enemy moves left forever
@@ -216,7 +258,7 @@ List<Item> items = new ArrayList<>();
             this.enemy2.updateHitbox();
         }
 
-        this.like1.setxPosition(this.like1.getxPosition()+25);
+        this.like1.setxPosition(this.like1.getxPosition()+5);
 
         // MOVE THE HITBOX (recalcluate the position of the hitbox)
         this.like1.updateHitbox();
@@ -297,6 +339,7 @@ List<Item> items = new ArrayList<>();
 
             // decrease the lives
             score = score + 1;
+            items.remove(like1);
 
         }
         if (this.player.getHitbox().intersect(this.like2.getHitbox()) == true) {
@@ -313,20 +356,29 @@ List<Item> items = new ArrayList<>();
 
             // decrease the lives
             score = score + 1;
-
-        }
-        if (lives = 0){
-            //make the game stop/pause
-            pauseGame();
-
+            //for removing the one liked item after collision
+            items.remove(like1);
 
         }
 
 
+        // COLLISION DETECTION BETWEEN dino AND dislike
+
+
+            if (this.like1.getHitbox().intersect(player.getHitbox())) {
+                items.remove(like1);
+
+                this.player.updateHitbox();
+
+            }
+
+        }
+
+//        getRandomItem(items);
 
 
 
-    }
+
 
     public void redrawSprites() {
         if (this.holder.getSurface().isValid()) {
@@ -350,7 +402,7 @@ List<Item> items = new ArrayList<>();
 
 
 
-//drawing a line
+            //drawing a line
             canvas.drawLine(10,300,3000,300,paintbrush);
             canvas.drawLine(10,600,3000,600,paintbrush);
             canvas.drawLine(10,900,3000,900,paintbrush);
@@ -362,24 +414,34 @@ List<Item> items = new ArrayList<>();
             canvas.drawRect(player.getHitbox(), paintbrush);
 
             // draw the enemy graphic on the screen
-            canvas.drawBitmap(enemy1.getImage(), enemy1.getxPosition(), enemy1.getyPosition(), paintbrush);
-            // 2. draw the enemy's hitbox
-            canvas.drawRect(enemy1.getHitbox(), paintbrush);
+//            canvas.drawBitmap(enemy1.getImage(), enemy1.getxPosition(), enemy1.getyPosition(), paintbrush);
+//            // 2. draw the enemy's hitbox
+//            canvas.drawRect(enemy1.getHitbox(), paintbrush);
+//
+//
+//            // draw enemy 2 on the screen
+//            // draw the enemy graphic on the screen
+//            canvas.drawBitmap(enemy2.getImage(), enemy2.getxPosition(), enemy2.getyPosition(), paintbrush);
+//            // 2. draw the enemy's hitbox
+//            canvas.drawRect(enemy2.getHitbox(), paintbrush);
+//
+//            canvas.drawBitmap(like1.getImage(), like1.getxPosition(), like1.getyPosition(), paintbrush);
+//            // 2. draw the enemy's hitbox
+//            canvas.drawRect(like1.getHitbox(), paintbrush);
+//            canvas.drawBitmap(like2.getImage(), like2.getxPosition(), like2.getyPosition(), paintbrush);
+//            // 2. draw the enemy's hitbox
+//            canvas.drawRect(like2.getHitbox(), paintbrush);
 
 
-            // draw enemy 2 on the screen
-            // draw the enemy graphic on the screen
-            canvas.drawBitmap(enemy2.getImage(), enemy2.getxPosition(), enemy2.getyPosition(), paintbrush);
-            // 2. draw the enemy's hitbox
-            canvas.drawRect(enemy2.getHitbox(), paintbrush);
+            for (int i = 0; i < items.size(); i++) {
+                Item b = items.get(i);
 
-            canvas.drawBitmap(like1.getImage(), like1.getxPosition(), like1.getyPosition(), paintbrush);
-            // 2. draw the enemy's hitbox
-            canvas.drawRect(like1.getHitbox(), paintbrush);
-            canvas.drawBitmap(like2.getImage(), like2.getxPosition(), like2.getyPosition(), paintbrush);
-            // 2. draw the enemy's hitbox
-            canvas.drawRect(like2.getHitbox(), paintbrush);
+                canvas.drawRect(b.getHitbox(), paintbrush);
+                canvas.drawBitmap(b.getImage(), b.getxPosition(), b.getyPosition(), paintbrush);
 
+
+
+            }
             // -----------------------------
             paintbrush.setColor(Color.BLACK);
             paintbrush.setTextSize(60);

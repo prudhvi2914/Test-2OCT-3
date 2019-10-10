@@ -25,15 +25,13 @@ public class Item {
     //Implemnet randomly appereing items
     List<Item> images = new ArrayList<>();
 
-    public Item(Context context, int x, int y) {
+    public Item(Context context, int x, int y,Bitmap image , Rect hitbox) {
         // 1. set up the initial position of the Enemy
         this.xPosition = x;
         this.yPosition = y;
-
+this.image = image;
         // 2. Set the default image - all enemies have same image
-        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.poop64);
-        this.image2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.rainbow64);
-        this.image3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.candy32);
+
 //
 //images.add(R.drawable.poop64);
 //int images[]={(image,image2,image3)};
